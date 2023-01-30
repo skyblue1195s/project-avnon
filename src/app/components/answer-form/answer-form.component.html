@@ -1,0 +1,63 @@
+<nz-drawer [nzBodyStyle]="{ overflow: 'auto' }" [nzMaskClosable]="false" [nzWidth]="720" [nzVisible]="visible"
+  [nzTitle]="title" (nzOnClose)="close()">
+  <form nz-form nzLayout="vertical" [formGroup]="validateForm" *nzDrawerContent (ngSubmit)="submitForm($event)">
+    <nz-form-item>
+      <nz-form-label nzRequired>Type</nz-form-label>
+      <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Select a person" formControlName="type"
+        (ngModelChange)="handlerChangeType($event)">
+        <nz-option nzLabel="Paragraphy" nzValue="paragraphy"></nz-option>
+        <nz-option nzLabel="Checkbox" nzValue="checkbox"></nz-option>
+      </nz-select>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzRequired>Question</nz-form-label>
+      <nz-form-control nzHasFeedback [nzErrorTip]="questionError">
+        <input nz-input formControlName="question" placeholder="Please enter your question" />
+        <ng-template #questionError let-control>
+          <ng-container *ngIf="control.hasError('required')">Please input your question!</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+
+    <div *ngIf="this.validateForm.value.type === 'checkbox'">
+      <nz-form-item *ngFor="let control of listOfAnswer; let i = index">
+        <nz-form-label [nzXs]="24" [nzSm]="4" nzRequired *ngIf="i == 0" [nzFor]="control?.controlInstance">Answer
+        </nz-form-label>
+        <nz-form-control nzErrorTip="Add Answer Option">
+          <input nz-input placeholder="Please add answer optionr" class="answer-input" [attr.id]="control.id"
+            [formControlName]="control.controlInstance" />
+          <span nz-icon nzType="minus-circle-o" *ngIf="i > 0" class="dynamic-delete-button"
+            (click)="removeField(control, $event)"></span>
+        </nz-form-control>
+
+      </nz-form-item>
+      <nz-form-item *ngIf="listOfAnswer.length < 4">
+        <nz-form-control [nzXs]="{ span: 24, offset: 0 }" [nzSm]="{ span: 20, offset: 4 }">
+          <button nz-button nzType="primary" class="add-button" (click)="addField($event)">
+            <span nz-icon nzType="plus"></span>
+            Add another answer
+          </button>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <label nz-checkbox formControlName="isOther">
+          <span>Allow user to specify their own answer</span>
+        </label>
+      </nz-form-item>
+    </div>
+
+    <nz-form-item>
+      <label nz-checkbox formControlName="isRequired">
+        <span>This field is required</span>
+      </label>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-control [nzOffset]="7" [nzSpan]="12">
+        <button nz-button nzType="primary" [nzLoading]="loading" [disabled]="!validateForm.valid">
+          Submit
+        </button>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-drawer>

@@ -1,0 +1,30 @@
+<nz-card>
+  <div>
+    <form nz-form nzLayout="vertical" [formGroup]="validateForm" (ngSubmit)="viewReviewAnswer()">
+      <nz-form-item *ngFor="let item of listOfData; let i = index">
+        <nz-form-label [nzRequired]="item.isRequired" class="strong" nzFor="question_{{i}}">{{ item.question }}</nz-form-label>
+        <nz-form-control nzHasFeedback nzErrorTip="This question is required">
+          <textarea *ngIf="item.type === 'paragraphy'; else selectBox" (change)="handlerChange($event, i)"
+            [name]="item.question" formControlName="question_{{i}}" nz-input [attr.id]="i"
+            rows="2">{{ item.answer }}</textarea>
+          <ng-template #selectBox>
+            <div formArrayName="question_{{i}}" *ngFor="let data of item.answer; let y = index">
+              <input type="checkbox" [id]="y" [formControlName]="data.id" (change)="handlerChange($event, i, y)"
+                [value]="true"/>
+              <label [for]="y" class="ml-4px">{{ data.value }}</label>
+            </div>
+            <span class="ant-form-item-explain-error" *ngIf="checkShowError(i)">Please select your answer!</span>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <button nz-button nzType="primary" *ngIf="listOfData.length > 0 " class="content-right">
+        <span  *ngIf="loading;else reviewButton" nz-icon [nzType]="'loading'"></span>
+        <ng-template #reviewButton>Review my answers</ng-template>
+      </button>
+    </form>
+  </div>
+  <a (click)="openProductForm()">Add New Question</a>
+
+</nz-card>
+
+<app-answer-form></app-answer-form>
